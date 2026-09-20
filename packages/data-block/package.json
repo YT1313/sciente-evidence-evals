@@ -1,0 +1,25 @@
+{
+  "name": "@sciente/data-block",
+  "version": "0.1.0",
+  "description": "Nonce-delimited data blocks for untrusted text in LLM prompts: invisible-Unicode stripping and boundary-forgery neutralisation.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --build --force"
+  },
+  "keywords": ["prompt-injection", "llm", "security", "unicode"],
+  "engines": {
+    "node": ">=20.11"
+  }
+}

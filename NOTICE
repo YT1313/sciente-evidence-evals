@@ -1,0 +1,23 @@
+sciente-evidence-evals
+Copyright 2026 Sciente
+
+This product includes software developed at Sciente.
+
+Third-party material
+--------------------
+
+No third-party datasets are distributed with this repository.
+
+The RoB 2 tool itself (Sterne JAC, Savovic J, Page MJ, et al. RoB 2: a revised
+tool for assessing risk of bias in randomised trials. BMJ 2019;366:l4898,
+doi:10.1136/bmj.l4898) is the work of the Cochrane RoB 2 development group.
+This repository implements the published decision algorithm; it is not an
+official Cochrane product and is not endorsed by Cochrane.
+
+Reference evaluation datasets (for example ROBoto2) are downloaded on demand by
+`packages/appraisal-evals/scripts/fetch-reference-datasets.mjs` and remain under
+their own licences. See `packages/appraisal-evals/data/README.md`.
+
+Test fixtures under `packages/appraisal-evals/fixtures/` are synthetic text
+written for this repository, or excerpts from CC-BY sources with the source
+recorded in the fixture's `provenance` field.

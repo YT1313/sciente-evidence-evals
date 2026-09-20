@@ -1,0 +1,74 @@
+name: Judged eval
+
+# Manual only. This workflow calls a model, so it costs money and its result
+# varies between runs. It is not a gate; the gate is the deterministic eval in
+# ci.yml, which runs on every push.
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: Provider to use
+        required: true
+        default: anthropic
+        type: choice
+        options:
+          - anthropic
+          - openai-compatible
+      model:
+        description: Model identifier (no default — name it explicitly)
+        required: true
+        type: string
+      live:
+        description: Re-run the appraisal against the model too, not only the judge
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  judge:
+    name: run the judge
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: model-evals
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from "packageManager" in package.json; setting it here
+      # too makes pnpm/action-setup fail on the mismatch.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Judged eval
+        env:
+          APPRAISAL_PROVIDER: ${{ inputs.provider }}
+          APPRAISAL_MODEL: ${{ inputs.model }}
+          # Keys come from the repository environment, never from the source.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+        run: >
+          node packages/appraisal-evals/dist/eval/run-judge.js
+          ${{ inputs.live && '--live' || '' }}
+          --json reports/judge-eval.json
+
+      - name: Upload judge report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: judge-eval
+          path: reports/judge-eval.json
+          if-no-files-found: ignore

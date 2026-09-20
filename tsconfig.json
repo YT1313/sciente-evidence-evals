@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/data-block" },
+    { "path": "packages/appraisal-evals" }
+  ]
+}

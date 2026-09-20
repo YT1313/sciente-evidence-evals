@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint, typecheck, test, deterministic eval
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from "packageManager" in package.json; setting it here
+      # too makes pnpm/action-setup fail on the mismatch.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      # No API key is set for this step, and none is needed: the appraisal
+      # pipeline runs against recorded responses. If it ever starts requiring
+      # a key, this job fails, which is the point.
+      - name: Deterministic eval (no model key)
+        env:
+          ANTHROPIC_API_KEY: ""
+          OPENAI_API_KEY: ""
+        run: >
+          node packages/appraisal-evals/dist/eval/run-deterministic.js
+          --min-ac1 0.6
+          --min-coverage 0.6
+          --min-verification 0.9
+          --max-false-demotion 0
+          --json reports/deterministic-eval.json
+
+      - name: Forbidden-content scan
+        run: node scripts/scan-forbidden.mjs
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deterministic-eval
+          path: reports/deterministic-eval.json
+          if-no-files-found: ignore
+
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

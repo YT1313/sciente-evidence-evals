@@ -1,0 +1,31 @@
+{
+  "name": "@sciente/appraisal-evals",
+  "version": "0.1.0",
+  "description": "Cochrane RoB 2 appraisal with mandatory verbatim citations, programmatic quote verification, a deterministic judgement algorithm, and an evaluation harness.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "fixtures", "scripts", "README.md"],
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --build --force",
+    "eval:deterministic": "node dist/eval/run-deterministic.js",
+    "eval:judge": "node dist/eval/run-judge.js",
+    "fetch:data": "node scripts/fetch-reference-datasets.mjs"
+  },
+  "dependencies": {
+    "@sciente/data-block": "workspace:*",
+    "zod": "^3.24.1"
+  },
+  "keywords": ["risk-of-bias", "rob2", "evidence-synthesis", "llm", "eval"],
+  "engines": {
+    "node": ">=20.11"
+  }
+}

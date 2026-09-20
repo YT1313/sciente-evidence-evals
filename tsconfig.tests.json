@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "types": ["node", "vitest/globals"],
+    "paths": {
+      "@sciente/data-block": ["./packages/data-block/src/index.ts"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["packages/*/test/**/*.ts", "vitest.config.ts"]
+}

@@ -1,0 +1,18 @@
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+
+# Downloaded reference datasets are never committed — see
+# packages/appraisal-evals/scripts/fetch-reference-datasets.mjs
+packages/appraisal-evals/data/*
+!packages/appraisal-evals/data/README.md
+reports/
+
+# Never commit local secrets. Keys are read from the environment only.
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db
